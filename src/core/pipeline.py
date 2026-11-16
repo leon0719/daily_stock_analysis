@@ -11,6 +11,7 @@ A股自选股智能分析系统 - 核心分析流水线
 4. 提供股票分析的核心功能
 """
 
+from src.data.stock_mapping import STOCK_NAME_MAP  # 本地修改
 import logging
 import inspect
 import threading
@@ -518,7 +519,8 @@ class StockAnalysisPipeline:
                     realtime_quote = self.fetcher_manager.get_realtime_quote(code, log_final_failure=False)
                     if realtime_quote:
                         # 股票使用实时行情名称；指数保持注册表中文名为权威显示名。
-                        if realtime_quote.name and not is_index:
+                        # 本地修改：本地中文名稱對照優先於行情源英文名
+                        if realtime_quote.name and not is_index and code not in STOCK_NAME_MAP:
                             stock_name = realtime_quote.name
                         # 兼容不同数据源的字段（有些数据源可能没有 volume_ratio）
                         volume_ratio = getattr(realtime_quote, 'volume_ratio', None)

@@ -1944,13 +1944,7 @@ class NotificationService(
                 f"{signal_text} | "
                 f"{labels['score_label']} {r.sentiment_score} | {one}"
             )
-            news_disclosure = self._empty_news_disclosure(r, report_language)
-            if news_disclosure:
-                lines.append(news_disclosure)
-            if self._append_data_sources_line(lines, r, labels):
-                lines.append("")
-        lines.append("")
-        lines.append(f"*{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*")
+            # 本地修改：簡報不附新聞缺漏提示、資料來源行與時間戳
         models = self._collect_models_used(results)
         if models:
             lines.append(f"*{labels['analysis_model_label']}: {', '.join(models)}*")

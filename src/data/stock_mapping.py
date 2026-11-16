@@ -296,3 +296,9 @@ def is_meaningful_stock_name(name: str | None, stock_code: str) -> bool:
         return False
 
     return True
+
+
+# 本地修改：台股中文名稱（由 taiwan-stock-bot 的 watchlist 產生）
+import json as _json
+from pathlib import Path as _Path
+STOCK_NAME_MAP.update(_json.loads((_Path(__file__).with_name("tw_names.json")).read_text(encoding="utf-8")))

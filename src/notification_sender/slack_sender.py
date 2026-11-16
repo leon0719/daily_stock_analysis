@@ -10,6 +10,7 @@ import logging
 import json
 from typing import Optional
 
+import opencc
 import requests
 
 from src.config import Config
@@ -21,6 +22,9 @@ logger = logging.getLogger(__name__)
 _BLOCK_TEXT_LIMIT = 3000
 # Slack chat.postMessage / Webhook 的 text 字段上限约 40000 字符，保守取 39000
 _TEXT_LIMIT = 39000
+
+
+_S2TWP = opencc.OpenCC('s2twp')
 
 
 class SlackSender:
@@ -60,6 +64,8 @@ class SlackSender:
             是否发送成功
         """
         sanitized_content = strip_hidden_markdown_metadata(content).strip()
+        # 本地修改：推送前簡轉繁（台灣用語）
+        sanitized_content = _S2TWP.convert(sanitized_content).replace('臺', '台')
         if not sanitized_content:
             logger.warning("Slack 消息内容为空，跳过推送")
             return False
