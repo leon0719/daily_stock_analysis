@@ -40,7 +40,7 @@ from src.analyzer import (
     stabilize_decision_with_structure,
 )
 from src.notification import NotificationService, NotificationChannel
-from src.schemas.decision_action import normalize_decision_action
+from src.schemas.decision_action import display_decision_type_for_result, normalize_decision_action
 from src.report_language import (
     get_placeholder_text,
     get_unknown_text,
@@ -3886,6 +3886,18 @@ class StockAnalysisPipeline:
         """
         noise_decision = None
         noise_finalized = False
+        if not skip_push and getattr(self.config, 'report_buy_only', False):
+            buys = [r for r in results if display_decision_type_for_result(r) == "buy"]
+            if not buys:
+                logger.info("REPORT_BUY_ONLY：%d 只股票均无买进建议，仅推送无讯号提示", len(results))
+                if self.notifier.is_available():
+                    self.notifier.send(
+                        f"今日無買進訊號（共分析 {len(results)} 檔）",
+                        route_type="report",
+                    )
+                return
+            logger.info("REPORT_BUY_ONLY：推送 %d/%d 只买进个股", len(buys), len(results))
+            results = buys
         try:
             logger.info("生成决策仪表盘日报...")
             report = self._generate_aggregate_report(results, report_type)

@@ -1243,6 +1243,8 @@ class Config:
 
     # 仅分析结果摘要：true 时只推送汇总，不含个股详情（Issue #262）
     report_summary_only: bool = False
+    # 只推送买进/加仓建议的个股，其余不推送；无买进时推送一行“今日无买进讯号”
+    report_buy_only: bool = False
     report_show_llm_model: bool = True
 
     # Report Engine P0: Jinja2 renderer and integrity checks
@@ -2238,6 +2240,7 @@ class Config:
             report_type=cls._parse_report_type(os.getenv('REPORT_TYPE', 'simple')),
             report_language=cls._parse_report_language(report_language_raw),
             report_summary_only=os.getenv('REPORT_SUMMARY_ONLY', 'false').lower() == 'true',
+            report_buy_only=os.getenv('REPORT_BUY_ONLY', 'false').lower() == 'true',
             report_show_llm_model=report_show_llm_model,
             report_templates_dir=os.getenv('REPORT_TEMPLATES_DIR', 'templates'),
             report_renderer_enabled=os.getenv('REPORT_RENDERER_ENABLED', 'false').lower() == 'true',
